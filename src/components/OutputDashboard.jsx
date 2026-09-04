@@ -3,19 +3,71 @@ import StressTestSlider from './StressTestSlider.jsx';
 import NegotiationCard from './NegotiationCard.jsx';
 import CountUp from './bits/CountUp.jsx';
 import BlurReveal from './bits/BlurReveal.jsx';
+import SpotlightCard from './bits/SpotlightCard.jsx';
+import DecryptedText from './bits/DecryptedText.jsx';
+import ShinyText from './bits/ShinyText.jsx';
+import StarBorder from './bits/StarBorder.jsx';
 import {
   ShieldCheck, TrendingUp, DollarSign, Percent, Sparkles,
   AlertTriangle, CheckCircle2, XCircle, RotateCcw, ArrowUpRight,
-  ArrowDownRight, Activity, Zap, Lock
+  ArrowDownRight, Activity, Zap, Lock, ShieldAlert, Cpu
 } from 'lucide-react';
 
 /* ─── helpers ──────────────────────────────────────────────────── */
 function verdictMeta(verdict) {
   switch (verdict) {
-    case 'borrow':       return { icon: CheckCircle2, label: 'APPROVED TO BORROW', color: 'var(--emerald-soft)', bg: 'var(--emerald-bg)', border: 'rgba(16,245,148,0.25)', glow: 'var(--shadow-emerald)', cls: 'green', dot: 'green' };
-    case 'borrow_less':  return { icon: AlertTriangle,  label: 'BORROW LESS',         color: 'var(--amber-bright)', bg: 'var(--amber-bg)',   border: 'rgba(245,158,11,0.25)',  glow: 'var(--shadow-amber)',   cls: 'amber', dot: 'amber' };
-    case 'refinance':    return { icon: RotateCcw,      label: 'REFINANCE FIRST',     color: 'var(--amber-bright)', bg: 'var(--amber-bg)',   border: 'rgba(245,158,11,0.25)',  glow: 'var(--shadow-amber)',   cls: 'amber', dot: 'amber' };
-    default:             return { icon: XCircle,        label: 'DO NOT BORROW',        color: 'var(--rose-soft)',    bg: 'var(--rose-bg)',    border: 'rgba(244,63,94,0.25)',   glow: 'var(--shadow-amber)',   cls: 'rose',  dot: 'rose' };
+    case 'borrow':
+      return {
+        icon: CheckCircle2,
+        label: 'APPROVED TO BORROW',
+        color: 'var(--jade)',
+        bg: 'var(--dark-2)',
+        border: 'rgba(34,201,132,0.3)',
+        glow: 'var(--shadow-jade)',
+        beamColor: 'var(--jade)',
+        spotlight: 'rgba(34,201,132,0.12)',
+        cls: 'green',
+        dot: 'green'
+      };
+    case 'borrow_less':
+      return {
+        icon: AlertTriangle,
+        label: 'BORROW LESS / CAP EXPOSURE',
+        color: 'var(--amber)',
+        bg: 'var(--dark-2)',
+        border: 'rgba(246,166,35,0.3)',
+        glow: 'var(--shadow-amber)',
+        beamColor: 'var(--amber)',
+        spotlight: 'rgba(246,166,35,0.12)',
+        cls: 'amber',
+        dot: 'amber'
+      };
+    case 'refinance':
+      return {
+        icon: RotateCcw,
+        label: 'REFINANCE HIGH-COST DEBT FIRST',
+        color: 'var(--amber)',
+        bg: 'var(--dark-2)',
+        border: 'rgba(246,166,35,0.3)',
+        glow: 'var(--shadow-amber)',
+        beamColor: 'var(--amber)',
+        spotlight: 'rgba(246,166,35,0.12)',
+        cls: 'amber',
+        dot: 'amber'
+      };
+    default:
+      return {
+        icon: XCircle,
+        label: 'DO NOT BORROW — HIGH DEFAULT RISK',
+        color: 'var(--crimson)',
+        bg: 'var(--dark-2)',
+        border: 'rgba(229,62,62,0.35)',
+        glow: 'var(--shadow-crimson)',
+        beamColor: 'var(--crimson)',
+        spotlight: 'rgba(229,62,62,0.15)',
+        cls: 'rose',
+        dot: 'rose'
+      };
   }
 }
 
@@ -50,10 +102,11 @@ function MiniBar({ value, max, color }) {
   );
 }
 
-function SectionLabel({ children, accent }) {
+function SectionLabel({ children, accent = 'var(--gold)' }) {
   return (
-    <div className="section-label">
-      <span className="label-caps" style={{ color: accent, whiteSpace: 'nowrap' }}>{children}</span>
+    <div className="section-label" style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <span className="label-caps" style={{ color: accent, whiteSpace: 'nowrap', letterSpacing: '0.12em' }}>{children}</span>
+      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--border-gold), transparent)' }} />
     </div>
   );
 }
@@ -81,7 +134,7 @@ export default function OutputDashboard({ evaluation }) {
   const foirCapPct = Math.round(foirCap * 100);
   const surplusPct = safeAvailableForEMI > 0 ? Math.min(100, Math.round((requestedEMI / safeAvailableForEMI) * 100)) : 0;
   const rateSpread = (fairRateBand.max - fairRateBand.min).toFixed(1);
-  const confidenceColor = confidenceLevel === 'High' ? 'var(--emerald-soft)' : confidenceLevel === 'Medium' ? 'var(--cyan)' : 'var(--amber-bright)';
+  const confidenceColor = confidenceLevel === 'High' ? 'var(--jade)' : confidenceLevel === 'Medium' ? 'var(--gold)' : 'var(--crimson)';
   const confidencePct = confidenceLevel === 'High' ? 0.85 : confidenceLevel === 'Medium' ? 0.55 : 0.28;
 
   const productMap = {
@@ -92,237 +145,285 @@ export default function OutputDashboard({ evaluation }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-      {/* ═══ ROW 1: VERDICT HERO ═══════════════════════════════════ */}
+      {/* ═══ ROW 1: VERDICT HERO WITH REACT BITS STARBORDER & SPOTLIGHT ══════ */}
       <BlurReveal delay={0}>
-        <div style={{
-          background: vm.bg,
-          border: `1px solid ${vm.border}`,
-          borderRadius: 'var(--radius-lg)',
-          padding: '1.25rem 1.5rem',
-          position: 'relative',
-          overflow: 'hidden',
-          boxShadow: vm.glow
-        }}>
-          {/* background orb */}
-          <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'200px', height:'200px',
-            borderRadius:'50%', background: vm.color, filter:'blur(80px)', opacity: 0.12, pointerEvents:'none' }} />
+        <StarBorder color={vm.beamColor} speed="3.5s" style={{ borderRadius: 'var(--radius-lg)' }}>
+          <SpotlightCard
+            spotlightColor={vm.spotlight}
+            borderColor={vm.border}
+            style={{
+              background: vm.bg,
+              border: `1px solid ${vm.border}`,
+              borderRadius: 'var(--radius-lg)',
+              padding: '1.4rem 1.6rem',
+              boxShadow: vm.glow,
+            }}
+          >
+            {/* Ambient Batcave scanline / glow effect */}
+            <div style={{
+              position: 'absolute', top: '-40px', right: '-40px', width: '220px', height: '220px',
+              borderRadius: '50%', background: vm.color, filter: 'blur(90px)', opacity: 0.12, pointerEvents: 'none'
+            }} />
 
-          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'1rem', flexWrap:'wrap', position:'relative' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
-              <div style={{ width:'48px', height:'48px', borderRadius:'14px', background: vm.bg,
-                border:`1.5px solid ${vm.border}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <VerdictIcon size={24} color={vm.color} />
-              </div>
-              <div>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.25rem' }}>
-                  <span className="pulse-dot" style={{ background: vm.color, color: vm.color }} />
-                  <span style={{ fontSize:'0.72rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', color: vm.color }}>
-                    O1 VERDICT
-                  </span>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div style={{
+                  width: '52px', height: '52px', borderRadius: '12px', background: 'var(--dark-1)',
+                  border: `1.5px solid ${vm.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: `0 0 16px ${vm.spotlight}`, flexShrink: 0
+                }}>
+                  <VerdictIcon size={28} color={vm.color} />
                 </div>
-                <h2 style={{ fontSize:'1.5rem', fontWeight:900, margin:0, color: vm.color, letterSpacing:'-0.03em', lineHeight:1 }}>
-                  {vm.label}
-                </h2>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <span className="pulse-dot" style={{ background: vm.color, color: vm.color }} />
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)' }}>
+                      BATCOMPUTER INTEL • O1 VERDICT
+                    </span>
+                  </div>
+                  <h2 style={{ fontSize: '1.65rem', fontWeight: 900, margin: 0, color: vm.color, letterSpacing: '-0.02em', lineHeight: 1.15, fontFamily: 'var(--font-display)' }}>
+                    <DecryptedText
+                      text={vm.label}
+                      speed={30}
+                      maxIterations={16}
+                      characters="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$!*%"
+                      encryptedClassName="encrypted-text"
+                      animateOn="both"
+                    />
+                  </h2>
+                </div>
               </div>
-            </div>
 
-            {/* Confidence ring */}
-            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'0.25rem', flexShrink:0 }}>
-              <div style={{ position:'relative', display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
-                <ScoreRing pct={confidencePct} color={confidenceColor} size={68} strokeW={6} />
-                <div style={{ position:'absolute', textAlign:'center' }}>
-                  <div style={{ fontSize:'0.8rem', fontWeight:800, fontFamily:'var(--font-mono)', color: confidenceColor }}>
-                    {confidenceLevel === 'High' ? '85%' : confidenceLevel === 'Medium' ? '55%' : '28%'}
+              {/* Confidence ring */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
+                <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ScoreRing pct={confidencePct} color={confidenceColor} size={68} strokeW={6} />
+                  <div style={{ position: 'absolute', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: confidenceColor }}>
+                      {confidenceLevel === 'High' ? '85%' : confidenceLevel === 'Medium' ? '55%' : '28%'}
+                    </div>
                   </div>
                 </div>
+                <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)' }}>
+                  {confidenceLevel} Confidence
+                </span>
               </div>
-              <span style={{ fontSize:'0.65rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.06em', color:'var(--text-muted)' }}>
-                {confidenceLevel} Confidence
-              </span>
             </div>
-          </div>
 
-          <p style={{ fontSize:'0.9rem', fontWeight:600, color:'var(--text-primary)', margin:'0.85rem 0 0', lineHeight:1.5, position:'relative' }}>
-            {verdictWhy}
-          </p>
-          <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginTop:'0.4rem', display:'flex', alignItems:'center', gap:'0.4rem', position:'relative' }}>
-            <Zap size={12} color='var(--text-muted)' />
-            {confidenceReason}
-          </div>
-        </div>
+            <p style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', margin: '1rem 0 0', lineHeight: 1.55, position: 'relative' }}>
+              {verdictWhy}
+            </p>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem', position: 'relative' }}>
+              <Cpu size={13} color="var(--gold)" />
+              <span>{confidenceReason}</span>
+            </div>
+          </SpotlightCard>
+        </StarBorder>
       </BlurReveal>
 
-      {/* ═══ ROW 2: PRODUCT + KEY STATS ═══════════════════════════ */}
+      {/* ═══ ROW 2: PRODUCT + KEY STATS WITH SPOTLIGHT CARDS ═══════ */}
       <BlurReveal delay={80}>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.8rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.8rem' }}>
 
           {/* FOIR Utilization */}
-          <div className="metric-card">
-            <div className="label-caps" style={{ marginBottom:'0.5rem' }}>FOIR Utilization</div>
-            <div style={{ display:'flex', alignItems:'flex-end', gap:'0.4rem', marginBottom:'0.4rem' }}>
-              <span className="stat-value md" style={{ color: foirPct > foirCapPct ? 'var(--rose-soft)' : foirPct > foirCapPct * 0.85 ? 'var(--amber-bright)' : 'var(--text-primary)' }}>
+          <SpotlightCard
+            className="metric-card"
+            spotlightColor="rgba(245, 197, 24, 0.08)"
+            borderColor="rgba(245, 197, 24, 0.25)"
+          >
+            <div className="label-caps" style={{ marginBottom: '0.5rem', color: 'var(--gold)' }}>FOIR Utilization</div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.4rem', marginBottom: '0.4rem' }}>
+              <span className="stat-value md mono-number" style={{ color: foirPct > foirCapPct ? 'var(--crimson)' : foirPct > foirCapPct * 0.85 ? 'var(--amber)' : 'var(--gold)' }}>
                 {foirPct}%
               </span>
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginBottom:'0.2rem' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>
                 / {foirCapPct}% cap
               </span>
             </div>
             <MiniBar
               value={foirPct}
               max={foirCapPct * 1.2}
-              color={foirPct > foirCapPct ? 'var(--rose-soft)' : foirPct > foirCapPct * 0.85 ? 'var(--amber)' : 'linear-gradient(90deg,var(--cyan),var(--violet))'}
+              color={foirPct > foirCapPct ? 'var(--crimson)' : foirPct > foirCapPct * 0.85 ? 'var(--amber)' : 'linear-gradient(90deg, var(--gold-dark), var(--gold))'}
             />
-            <div style={{ fontSize:'0.73rem', color:'var(--text-muted)', marginTop:'0.4rem' }}>
+            <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary)', marginTop: '0.45rem' }}>
               Fixed obligation to income ratio
             </div>
-          </div>
+          </SpotlightCard>
 
           {/* EMI vs Surplus */}
-          <div className="metric-card">
-            <div className="label-caps" style={{ marginBottom:'0.5rem' }}>EMI vs Surplus</div>
-            <div style={{ display:'flex', alignItems:'flex-end', gap:'0.4rem', marginBottom:'0.4rem' }}>
-              <span className="stat-value md" style={{ color: surplusPct > 100 ? 'var(--rose-soft)' : surplusPct > 80 ? 'var(--amber-bright)' : 'var(--emerald-soft)' }}>
+          <SpotlightCard
+            className="metric-card"
+            spotlightColor="rgba(245, 197, 24, 0.08)"
+            borderColor="rgba(245, 197, 24, 0.25)"
+          >
+            <div className="label-caps" style={{ marginBottom: '0.5rem', color: 'var(--gold)' }}>EMI vs Surplus</div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.4rem', marginBottom: '0.4rem' }}>
+              <span className="stat-value md mono-number" style={{ color: surplusPct > 100 ? 'var(--crimson)' : surplusPct > 80 ? 'var(--amber)' : 'var(--jade)' }}>
                 {surplusPct}%
               </span>
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginBottom:'0.2rem' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>
                 of safe surplus
               </span>
             </div>
             <MiniBar
               value={surplusPct}
               max={130}
-              color={surplusPct > 100 ? 'var(--rose-soft)' : surplusPct > 80 ? 'var(--amber)' : 'linear-gradient(90deg,var(--emerald),var(--cyan))'}
+              color={surplusPct > 100 ? 'var(--crimson)' : surplusPct > 80 ? 'var(--amber)' : 'linear-gradient(90deg, var(--jade), var(--gold))'}
             />
-            <div style={{ fontSize:'0.73rem', color:'var(--text-muted)', marginTop:'0.4rem' }}>
+            <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary)', marginTop: '0.45rem' }}>
               Requested EMI as % of monthly surplus
             </div>
-          </div>
+          </SpotlightCard>
 
           {/* Product Route */}
-          <div className="metric-card">
-            <div className="label-caps" style={{ marginBottom:'0.5rem' }}>Product Route</div>
-            <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', marginBottom:'0.35rem' }}>
-              {targetProduct === 'lap' ? <Lock size={16} color="var(--cyan)" /> : <Activity size={16} color="var(--violet-soft)" />}
-              <span style={{ fontSize:'0.88rem', fontWeight:700, color:'var(--text-primary)', lineHeight:1.2 }}>
+          <SpotlightCard
+            className="metric-card"
+            spotlightColor="rgba(245, 197, 24, 0.08)"
+            borderColor="rgba(245, 197, 24, 0.25)"
+          >
+            <div className="label-caps" style={{ marginBottom: '0.5rem', color: 'var(--gold)' }}>Product Route</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.35rem' }}>
+              {targetProduct === 'lap' ? <Lock size={16} color="var(--gold)" /> : <Activity size={16} color="var(--gold)" />}
+              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
                 {productMap[targetProduct] || targetProduct}
               </span>
             </div>
-            <div style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span className={`badge badge-${vm.dot}`}>{creditLabel}</span>
             </div>
-            <div style={{ fontSize:'0.73rem', color:'var(--text-muted)', marginTop:'0.45rem' }}>
-              Based on purpose, collateral & income type
+            <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary)', marginTop: '0.45rem' }}>
+              Collateral, profile & risk classification
             </div>
-          </div>
+          </SpotlightCard>
         </div>
       </BlurReveal>
 
-      {/* ═══ ROW 3: O2 + O3 + O4 PRIMARY METRICS ═══════════════════ */}
+      {/* ═══ ROW 3: O2 + O3 + O4 PRIMARY METRICS WITH BATMAN SPOTLIGHT ═══ */}
       <BlurReveal delay={120}>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.8rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.8rem' }}>
 
           {/* O2: Loan Capacity */}
-          <div className="metric-card" style={{ gridColumn: '1 / 2' }}>
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.75rem' }}>
-              <div className="label-caps">O2 • Loan Capacity</div>
-              <DollarSign size={16} color="var(--cyan)" />
+          <SpotlightCard
+            className="metric-card"
+            spotlightColor="rgba(245, 197, 24, 0.12)"
+            borderColor="rgba(245, 197, 24, 0.35)"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <div className="label-caps" style={{ color: 'var(--gold)' }}>O2 • Loan Capacity</div>
+              <DollarSign size={16} color="var(--gold)" />
             </div>
 
-            <div style={{ marginBottom:'0.75rem' }}>
-              <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginBottom:'0.15rem' }}>Lender Will Sanction</div>
-              <div className="stat-value sm mono-number" style={{ color:'var(--text-secondary)' }}>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.15rem' }}>Lender Will Sanction</div>
+              <div className="stat-value sm mono-number" style={{ color: 'var(--text-secondary)' }}>
                 ₹<CountUp to={lenderSanctionLimit} separator="," duration={900} delay={200} />
               </div>
             </div>
 
             <div className="divider-gradient" />
 
-            <div style={{ marginBottom:'0.6rem' }}>
-              <div style={{ fontSize:'0.72rem', color:'var(--emerald-soft)', fontWeight:700, marginBottom:'0.15rem' }}>Your Safe Carry Ceiling</div>
-              <div className="stat-value lg mono-number" style={{ color:'var(--emerald-soft)' }}>
-                ₹<CountUp to={safeBorrowerLimit} separator="," duration={1100} delay={300} />
+            <div style={{ marginBottom: '0.6rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--gold)', fontWeight: 700, marginBottom: '0.15rem' }}>Your Safe Carry Ceiling</div>
+              <div className="stat-value lg mono-number">
+                <ShinyText color="var(--gold)" shineColor="#FFFFFF" speed={3}>
+                  ₹<CountUp to={safeBorrowerLimit} separator="," duration={1100} delay={300} />
+                </ShinyText>
               </div>
             </div>
 
             <MiniBar
               value={safeBorrowerLimit}
               max={lenderSanctionLimit > 0 ? lenderSanctionLimit : safeBorrowerLimit}
-              color="linear-gradient(90deg, var(--emerald), var(--cyan))"
+              color="linear-gradient(90deg, var(--gold-dark), var(--gold))"
             />
 
             {limitDifference > 0 && (
-              <div style={{ marginTop:'0.5rem', fontSize:'0.73rem', color:'var(--amber-bright)', display:'flex', alignItems:'center', gap:'0.3rem' }}>
-                <AlertTriangle size={11} />
-                ₹{limitDifference.toLocaleString('en-IN')} gap vs lender offer
+              <div style={{ marginTop: '0.5rem', fontSize: '0.73rem', color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <AlertTriangle size={12} />
+                <span>₹{limitDifference.toLocaleString('en-IN')} excess lender offer</span>
               </div>
             )}
-          </div>
+          </SpotlightCard>
 
           {/* O3: Rate Band */}
-          <div className="metric-card">
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.75rem' }}>
-              <div className="label-caps">O3 • Fair Rate Band</div>
-              <Percent size={16} color="var(--violet-soft)" />
+          <SpotlightCard
+            className="metric-card"
+            spotlightColor="rgba(245, 197, 24, 0.12)"
+            borderColor="rgba(245, 197, 24, 0.35)"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <div className="label-caps" style={{ color: 'var(--gold)' }}>O3 • Fair Rate Band</div>
+              <Percent size={16} color="var(--gold)" />
             </div>
 
-            <div style={{ textAlign:'center', padding:'0.5rem 0', marginBottom:'0.5rem' }}>
-              <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginBottom:'0.25rem' }}>Target Nominal Rate</div>
-              <div className="stat-value xl mono-number gradient-text-cyan">
-                {fairRateBand.min}–{fairRateBand.max}<span style={{ fontSize:'1.2rem', fontWeight:600 }}>%</span>
+            <div style={{ textAlign: 'center', padding: '0.5rem 0', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Target Nominal Rate</div>
+              <div className="stat-value xl mono-number">
+                <ShinyText color="var(--gold)" shineColor="#FFFFFF" speed={3.2}>
+                  {fairRateBand.min}–{fairRateBand.max}%
+                </ShinyText>
               </div>
-              <div style={{ fontSize:'0.73rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>
-                Midpoint: <span style={{ color:'var(--cyan)', fontWeight:700 }}>{fairRateBand.midpoint}%</span>
+              <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                Midpoint: <span style={{ color: 'var(--gold)', fontWeight: 700 }}>{fairRateBand.midpoint}%</span>
               </div>
             </div>
 
             <div className="divider" />
 
             <div className="stat-row">
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>All-in APR (w/ fees)</span>
-              <span className="mono-number" style={{ fontSize:'0.88rem', color:'var(--violet-soft)', fontWeight:700 }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>All-in APR (w/ fees)</span>
+              <span className="mono-number" style={{ fontSize: '0.88rem', color: 'var(--gold-bright)', fontWeight: 700 }}>
                 {allInAPR.min}–{allInAPR.max}%
               </span>
             </div>
             <div className="stat-row">
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>Processing Fee Cap</span>
-              <span className="mono-number" style={{ fontSize:'0.88rem', color:'var(--text-secondary)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Processing Fee Cap</span>
+              <span className="mono-number" style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 {allInAPR.processingFeePct}% + GST
               </span>
             </div>
             <div className="stat-row">
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>Rate Spread</span>
-              <span className="mono-number" style={{ fontSize:'0.88rem', color:'var(--text-secondary)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Rate Spread</span>
+              <span className="mono-number" style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 {rateSpread}%
               </span>
             </div>
-          </div>
+          </SpotlightCard>
 
           {/* O4: EMI Ceiling */}
-          <div className="metric-card">
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.75rem' }}>
-              <div className="label-caps">O4 • EMI Ceiling</div>
-              <TrendingUp size={16} color="var(--amber)" />
+          <SpotlightCard
+            className="metric-card"
+            spotlightColor="rgba(245, 197, 24, 0.12)"
+            borderColor="rgba(245, 197, 24, 0.35)"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <div className="label-caps" style={{ color: 'var(--gold)' }}>O4 • EMI Ceiling</div>
+              <TrendingUp size={16} color="var(--gold)" />
             </div>
 
-            <div style={{ marginBottom:'0.5rem' }}>
-              <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginBottom:'0.15rem' }}>Safe Monthly EMI Limit</div>
-              <div className="stat-value lg mono-number" style={{ color:'var(--amber-bright)' }}>
-                ₹<CountUp to={safeEMICeiling} separator="," duration={1000} delay={200} /><span style={{ fontSize:'1rem', fontWeight:600 }}>/mo</span>
+            <div style={{ marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.15rem' }}>Safe Monthly EMI Limit</div>
+              <div className="stat-value lg mono-number" style={{ color: 'var(--gold)' }}>
+                <ShinyText color="var(--gold)" shineColor="#FFFFFF" speed={2.8}>
+                  ₹<CountUp to={safeEMICeiling} separator="," duration={1000} delay={200} /><span style={{ fontSize: '1rem', fontWeight: 600 }}>/mo</span>
+                </ShinyText>
               </div>
             </div>
 
             <div className="divider" />
 
             <div className="stat-row">
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>Requested EMI</span>
-              <span className="mono-number" style={{ fontSize:'0.95rem', fontWeight:700,
-                color: requestedEMI <= safeEMICeiling ? 'var(--emerald-soft)' : 'var(--rose-soft)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Requested EMI</span>
+              <span className="mono-number" style={{
+                fontSize: '0.95rem', fontWeight: 700,
+                color: requestedEMI <= safeEMICeiling ? 'var(--jade)' : 'var(--crimson)'
+              }}>
                 ₹<CountUp to={requestedEMI} separator="," duration={900} delay={250} />/mo
               </span>
             </div>
             <div className="stat-row">
-              <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>Safe Monthly Surplus</span>
-              <span className="mono-number" style={{ fontSize:'0.88rem', color:'var(--text-secondary)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Safe Monthly Surplus</span>
+              <span className="mono-number" style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 ₹{safeAvailableForEMI.toLocaleString('en-IN')}
               </span>
             </div>
@@ -331,40 +432,53 @@ export default function OutputDashboard({ evaluation }) {
               value={requestedEMI}
               max={safeEMICeiling > 0 ? safeEMICeiling * 1.4 : requestedEMI * 1.4}
               color={requestedEMI <= safeEMICeiling
-                ? 'linear-gradient(90deg, var(--emerald), var(--cyan))'
-                : 'linear-gradient(90deg, var(--amber), var(--rose))'}
+                ? 'linear-gradient(90deg, var(--jade), var(--gold))'
+                : 'linear-gradient(90deg, var(--amber), var(--crimson))'}
             />
 
-            <div style={{ marginTop:'0.5rem', fontSize:'0.73rem',
-              color: requestedEMI <= safeEMICeiling ? 'var(--emerald-soft)' : 'var(--rose-soft)',
-              display:'flex', alignItems:'center', gap:'0.3rem' }}>
+            <div style={{
+              marginTop: '0.5rem', fontSize: '0.73rem',
+              color: requestedEMI <= safeEMICeiling ? 'var(--jade)' : 'var(--crimson)',
+              display: 'flex', alignItems: 'center', gap: '0.3rem'
+            }}>
               {requestedEMI <= safeEMICeiling
-                ? <><CheckCircle2 size={11} /> EMI is within safe ceiling ✓</>
-                : <><XCircle size={11} /> EMI exceeds safe ceiling ✗</>}
+                ? <><CheckCircle2 size={12} /> EMI within safe ceiling ✓</>
+                : <><XCircle size={12} /> EMI exceeds safe ceiling ✗</>}
             </div>
-          </div>
+          </SpotlightCard>
         </div>
       </BlurReveal>
 
-      {/* ═══ ROW 4: CASHFLOW ANALYSIS (always shown) ════════════════ */}
+      {/* ═══ ROW 4: CASHFLOW ANALYSIS WITH SPOTLIGHT TILES ═══════════ */}
       <BlurReveal delay={160}>
-        <div className="glass-card" style={{ padding:'1.25rem' }}>
-          <SectionLabel accent="var(--violet-soft)">Cashflow Breakdown</SectionLabel>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'0.8rem' }}>
+        <SpotlightCard
+          className="glass-card"
+          spotlightColor="rgba(245, 197, 24, 0.08)"
+          borderColor="rgba(245, 197, 24, 0.2)"
+          style={{ padding: '1.3rem' }}
+        >
+          <SectionLabel accent="var(--gold)">BATCAVE CASHFLOW INTELLIGENCE</SectionLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.8rem' }}>
             {[
-              { label: 'Net Monthly Income', value: netIncome, color: 'var(--emerald-soft)', icon: ArrowUpRight, bar: 100 },
-              { label: 'Living Expenses',    value: livingExpenses, color: 'var(--rose-soft)', icon: ArrowDownRight, bar: netIncome > 0 ? (livingExpenses/netIncome)*100 : 0 },
-              { label: 'Existing EMIs',      value: existingEMIs, color: 'var(--amber-bright)', icon: ArrowDownRight, bar: netIncome > 0 ? (existingEMIs/netIncome)*100 : 0 },
-              { label: 'Safe EMI Surplus',   value: safeAvailableForEMI, color: 'var(--cyan)', icon: Activity, bar: netIncome > 0 ? (safeAvailableForEMI/netIncome)*100 : 0 },
+              { label: 'Net Monthly Income', value: netIncome, color: 'var(--jade)', icon: ArrowUpRight, bar: 100 },
+              { label: 'Living Expenses', value: livingExpenses, color: 'var(--crimson)', icon: ArrowDownRight, bar: netIncome > 0 ? (livingExpenses / netIncome) * 100 : 0 },
+              { label: 'Existing EMIs', value: existingEMIs, color: 'var(--amber)', icon: ArrowDownRight, bar: netIncome > 0 ? (existingEMIs / netIncome) * 100 : 0 },
+              { label: 'Safe EMI Surplus', value: safeAvailableForEMI, color: 'var(--gold)', icon: Activity, bar: netIncome > 0 ? (safeAvailableForEMI / netIncome) * 100 : 0 },
             ].map((item, i) => {
               const Icon = item.icon;
               return (
-                <div key={i} style={{ padding:'0.75rem', background:'var(--bg-surface-3)', borderRadius:'var(--radius-sm)', border:'1px solid var(--border-dim)' }}>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.3rem' }}>
-                    <span style={{ fontSize:'0.7rem', color:'var(--text-muted)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.06em' }}>{item.label}</span>
-                    <Icon size={13} color={item.color} />
+                <div key={i} style={{
+                  padding: '0.85rem',
+                  background: 'var(--dark-3)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-dim)',
+                  transition: 'border-color 0.2s',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</span>
+                    <Icon size={14} color={item.color} />
                   </div>
-                  <div className="mono-number" style={{ fontSize:'1.05rem', fontWeight:700, color: item.color, marginBottom:'0.4rem' }}>
+                  <div className="mono-number" style={{ fontSize: '1.1rem', fontWeight: 700, color: item.color, marginBottom: '0.45rem' }}>
                     ₹{item.value.toLocaleString('en-IN')}
                   </div>
                   <MiniBar value={item.bar} max={100} color={item.color} />
@@ -372,55 +486,56 @@ export default function OutputDashboard({ evaluation }) {
               );
             })}
           </div>
-        </div>
+        </SpotlightCard>
       </BlurReveal>
 
       {/* ═══ ROW 5: PRODUCTIVE ASSET ROI (conditional) ══════════════ */}
       {productiveAssetROI.expectedIncomeGain > 0 && (
         <BlurReveal delay={180}>
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(0,212,255,0.05) 100%)',
-            border: '1px solid rgba(168,85,247,0.2)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1.25rem',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{ position:'absolute', top:'-20px', right:'-20px', width:'140px', height:'140px',
-              borderRadius:'50%', background:'var(--violet)', filter:'blur(60px)', opacity:0.08, pointerEvents:'none' }} />
-
-            <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'0.85rem' }}>
-              <div style={{ width:'34px', height:'34px', borderRadius:'10px', background:'var(--violet-bg)',
-                border:'1px solid rgba(168,85,247,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Sparkles size={17} color="var(--violet-soft)" />
+          <SpotlightCard
+            spotlightColor="rgba(245, 197, 24, 0.12)"
+            borderColor="rgba(245, 197, 24, 0.35)"
+            style={{
+              background: 'linear-gradient(135deg, rgba(245,197,24,0.06) 0%, rgba(34,201,132,0.04) 100%)',
+              border: '1px solid var(--border-gold)',
+              borderRadius: 'var(--radius-lg)',
+              padding: '1.3rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.9rem' }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '10px', background: 'var(--gold-bg)',
+                border: '1px solid var(--border-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <Sparkles size={18} color="var(--gold)" />
               </div>
               <div>
-                <div className="label-caps" style={{ color:'var(--violet-soft)' }}>Productive Asset ROI Analysis</div>
-                <div style={{ fontSize:'0.78rem', color:'var(--text-muted)' }}>Income-generating loan — net cashflow calculation</div>
+                <div className="label-caps" style={{ color: 'var(--gold)' }}>Productive Asset ROI Analysis</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Income-generating loan — net cashflow yield</div>
               </div>
             </div>
 
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.75rem' }}>
               {[
-                { label: 'Monthly Income Gain', value: productiveAssetROI.expectedIncomeGain, color: 'var(--emerald-soft)', prefix: '+₹', suffix: '/mo' },
-                { label: 'Monthly EMI Cost',    value: productiveAssetROI.requestedEMI,       color: 'var(--rose-soft)',    prefix: '-₹', suffix: '/mo' },
+                { label: 'Monthly Income Gain', value: productiveAssetROI.expectedIncomeGain, color: 'var(--jade)', prefix: '+₹', suffix: '/mo' },
+                { label: 'Monthly EMI Cost', value: productiveAssetROI.requestedEMI, color: 'var(--crimson)', prefix: '-₹', suffix: '/mo' },
                 {
                   label: 'Net Surplus Cashflow',
                   value: Math.abs(productiveAssetROI.netCashflowDelta ?? 0),
-                  color: productiveAssetROI.isCashflowPositive ? 'var(--emerald-soft)' : 'var(--rose-soft)',
+                  color: productiveAssetROI.isCashflowPositive ? 'var(--jade)' : 'var(--crimson)',
                   prefix: productiveAssetROI.isCashflowPositive ? '+₹' : '-₹',
                   suffix: '/mo'
                 }
               ].map((item, i) => (
-                <div key={i} style={{ textAlign:'center', padding:'0.75rem', background:'rgba(255,255,255,0.03)', borderRadius:'var(--radius-sm)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'0.3rem' }}>{item.label}</div>
+                <div key={i} style={{ textAlign: 'center', padding: '0.85rem', background: 'var(--dark-3)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>{item.label}</div>
                   <div className="stat-value md mono-number" style={{ color: item.color }}>
                     {item.prefix}<CountUp to={item.value} separator="," duration={1000} delay={200 + i * 100} />{item.suffix}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </SpotlightCard>
         </BlurReveal>
       )}
 

@@ -614,6 +614,27 @@ input[type="range"]::-webkit-slider-thumb:hover {
   to   { transform: translateY(100vh); }
 }
 
+@keyframes shineSweep {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+@keyframes star-border-sweep {
+  0% { transform: translate(0%, 0%); }
+  100% { transform: translate(100%, 0%); }
+}
+
+.spotlight-card {
+  position: relative;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.encrypted-text {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  text-shadow: 0 0 8px var(--gold-glow);
+  letter-spacing: 0.05em;
+}
+
 /* ── PRINT ──────────────────────────────────────────────────────────── */
 @media print {
   body { background: #fff !important; color: #000 !important; }

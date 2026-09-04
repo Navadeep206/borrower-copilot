@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle, TrendingDown, ArrowUpRight, Zap, ShieldAlert } from 'lucide-react';
+import SpotlightCard from './bits/SpotlightCard.jsx';
+import ShinyText from './bits/ShinyText.jsx';
 
 export default function StressTestSlider({ evaluation }) {
   const [incomeDropPct, setIncomeDropPct] = useState(20);
@@ -25,13 +27,17 @@ export default function StressTestSlider({ evaluation }) {
   const incomeSurvivalPct = stressedSafeAvailable > 0 ? Math.min(100, Math.round((requestedEMI / stressedSafeAvailable) * 100)) : 999;
 
   return (
-    <div style={{
-      background: 'var(--dark-2)',
-      borderRadius: 'var(--radius-lg)',
-      border: '1px solid var(--border)',
-      overflow: 'hidden',
-      position: 'relative'
-    }}>
+    <SpotlightCard
+      spotlightColor="rgba(245, 197, 24, 0.1)"
+      borderColor="rgba(245, 197, 24, 0.25)"
+      style={{
+        background: 'var(--dark-2)',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border)',
+        overflow: 'hidden',
+        position: 'relative'
+      }}
+    >
       {/* Header */}
       <div style={{
         padding: '0.85rem 1.25rem',
@@ -41,24 +47,26 @@ export default function StressTestSlider({ evaluation }) {
       }}>
         <div style={{
           width: '28px', height: '28px', borderRadius: '7px',
-          background: 'var(--amber-bg)', border: '1px solid rgba(246,166,35,0.2)',
+          background: 'var(--gold-bg)', border: '1px solid var(--border-gold)',
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <Zap size={14} color="var(--amber)" />
+          <Zap size={14} color="var(--gold)" />
         </div>
         <div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-primary)' }}>
-            Stress Test Simulator
+            <ShinyText color="var(--text-primary)" shineColor="var(--gold)" speed={3}>
+              Batcave Stress Test Simulator
+            </ShinyText>
           </div>
           <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
-            O4 · Worst-case scenario analysis
+            O4 · Downside scenario sensitivity stress analysis
           </div>
         </div>
       </div>
 
       <div style={{ padding: '1rem 1.25rem' }}>
         {/* Sliders */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1rem' }}>
           {/* Slider A */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
@@ -103,13 +111,13 @@ export default function StressTestSlider({ evaluation }) {
         </div>
 
         {/* Result Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.7rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.7rem' }}>
           {/* Income Stress Result */}
           <div style={{
             padding: '0.85rem 1rem',
             borderRadius: 'var(--radius-md)',
             background: isIncomeDropViable ? 'var(--jade-bg)' : 'var(--crimson-bg)',
-            border: `1px solid ${isIncomeDropViable ? 'rgba(34,201,132,0.2)' : 'rgba(229,62,62,0.2)'}`,
+            border: `1px solid ${isIncomeDropViable ? 'rgba(34,201,132,0.25)' : 'rgba(229,62,62,0.25)'}`,
             position: 'relative', overflow: 'hidden'
           }}>
             <div style={{
@@ -125,7 +133,7 @@ export default function StressTestSlider({ evaluation }) {
                 textTransform: 'uppercase', letterSpacing: '0.08em',
                 color: isIncomeDropViable ? 'var(--jade)' : 'var(--crimson)'
               }}>
-                {isIncomeDropViable ? 'Survivable' : 'Default Risk'}
+                {isIncomeDropViable ? 'Survivable Buffer' : 'Default Danger Zone'}
               </span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
@@ -141,7 +149,7 @@ export default function StressTestSlider({ evaluation }) {
             padding: '0.85rem 1rem',
             borderRadius: 'var(--radius-md)',
             background: 'var(--amber-bg)',
-            border: '1px solid rgba(246,166,35,0.2)',
+            border: '1px solid rgba(246,166,35,0.25)',
             position: 'relative', overflow: 'hidden'
           }}>
             <div style={{
@@ -151,7 +159,7 @@ export default function StressTestSlider({ evaluation }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.3rem' }}>
               <ArrowUpRight size={14} color="var(--amber)" />
               <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--amber)' }}>
-                EMI Impact
+                EMI Surge Impact
               </span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
@@ -163,6 +171,6 @@ export default function StressTestSlider({ evaluation }) {
           </div>
         </div>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }

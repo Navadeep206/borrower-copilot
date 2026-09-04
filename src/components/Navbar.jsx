@@ -1,7 +1,8 @@
 import React from 'react';
 import { Sliders, FileText, Sun, Moon, Shield } from 'lucide-react';
-import Aurora from './bits/Aurora.jsx';
 import MagnetButton from './bits/MagnetButton.jsx';
+import ShinyText from './bits/ShinyText.jsx';
+import DecryptedText from './bits/DecryptedText.jsx';
 
 export default function Navbar({ theme, setTheme, onOpenRules, onOpenSandbox }) {
   return (
@@ -48,10 +49,11 @@ export default function Navbar({ theme, setTheme, onOpenRules, onOpenSandbox }) 
                 <h1 style={{
                   fontFamily: 'var(--font-hero)',
                   fontSize: '1.7rem', fontWeight: 400, margin: 0, lineHeight: 1,
-                  color: 'var(--gold)', letterSpacing: '0.08em',
-                  textShadow: '0 0 20px var(--gold-glow)'
+                  letterSpacing: '0.08em',
                 }}>
-                  BORROWER
+                  <ShinyText color="var(--gold)" shineColor="#FFFFFF" speed={3.5}>
+                    BORROWER
+                  </ShinyText>
                 </h1>
                 <h1 style={{
                   fontFamily: 'var(--font-hero)',
@@ -61,9 +63,14 @@ export default function Navbar({ theme, setTheme, onOpenRules, onOpenSandbox }) 
                   COPILOT
                 </h1>
               </div>
-              <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'var(--font-display)' }}>
-                Indian Credit Intelligence & Lender Negotiation System
-              </p>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'var(--font-display)' }}>
+                <DecryptedText
+                  text="Indian Credit Intelligence & Lender Negotiation System"
+                  speed={28}
+                  maxIterations={14}
+                  animateOn="both"
+                />
+              </div>
             </div>
           </div>
 

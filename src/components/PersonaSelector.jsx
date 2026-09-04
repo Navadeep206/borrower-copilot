@@ -1,6 +1,8 @@
 import React from 'react';
 import { PERSONAS } from '../engine/personas.js';
 import { UserCheck, Zap, RotateCcw } from 'lucide-react';
+import SpotlightCard from './bits/SpotlightCard.jsx';
+import ShinyText from './bits/ShinyText.jsx';
 
 const verdictColor = {
   borrow: 'var(--jade)',
@@ -30,10 +32,12 @@ export default function PersonaSelector({ activePersonaId, onSelectPersona, onRe
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Zap size={16} color="var(--gold)" />
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold)' }}>
-            Quick Test Profiles
+            <ShinyText color="var(--gold)" shineColor="#FFFFFF" speed={3}>
+              Batcave Dossier Profiles
+            </ShinyText>
           </span>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            — Select to auto-fill questionnaire
+            — Select borrower to simulate
           </span>
         </div>
         <button
@@ -42,7 +46,7 @@ export default function PersonaSelector({ activePersonaId, onSelectPersona, onRe
           style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem' }}
         >
           <RotateCcw size={12} />
-          Reset
+          Reset Custom
         </button>
       </div>
 
@@ -50,16 +54,20 @@ export default function PersonaSelector({ activePersonaId, onSelectPersona, onRe
         {PERSONAS.map((p) => {
           const isSelected = activePersonaId === p.id;
           return (
-            <div
+            <SpotlightCard
               key={p.id}
               className={`persona-card ${isSelected ? 'active' : ''}`}
               onClick={() => onSelectPersona(p)}
+              spotlightColor={isSelected ? 'rgba(245, 197, 24, 0.16)' : 'rgba(245, 197, 24, 0.08)'}
+              borderColor={isSelected ? 'var(--gold)' : 'rgba(245, 197, 24, 0.25)'}
+              style={{ cursor: 'pointer' }}
             >
-              {/* Selected indicator */}
+              {/* Selected indicator line */}
               {isSelected && (
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-                  background: 'linear-gradient(90deg, transparent, var(--gold), transparent)'
+                  background: 'linear-gradient(90deg, transparent, var(--gold), transparent)',
+                  zIndex: 4
                 }} />
               )}
 
@@ -89,7 +97,7 @@ export default function PersonaSelector({ activePersonaId, onSelectPersona, onRe
               <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4, position: 'relative' }}>
                 {p.story}
               </p>
-            </div>
+            </SpotlightCard>
           );
         })}
       </div>

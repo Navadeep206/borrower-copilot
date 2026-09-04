@@ -5,6 +5,8 @@ import DynamicQuestionnaire from './components/DynamicQuestionnaire.jsx';
 import OutputDashboard from './components/OutputDashboard.jsx';
 import RuleSandbox from './components/RuleSandbox.jsx';
 import RulesInspector from './components/RulesInspector.jsx';
+import Squares from './components/bits/Squares.jsx';
+import BatcaveTacticalWidgets from './components/BatcaveTacticalWidgets.jsx';
 import { PERSONAS } from './engine/personas.js';
 import { DEFAULT_RULES } from './engine/rules.js';
 import { evaluateBorrower } from './engine/calculator.js';
@@ -49,8 +51,20 @@ export default function App() {
   };
 
   return (
-    <div className="app-container">
-      <Navbar
+    <div className="app-container" style={{ position: 'relative' }}>
+      {/* Batcave Tactical Interactive Radar Grid */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.65 }}>
+        <Squares
+          squareSize={50}
+          speed={0.25}
+          borderColor="rgba(245, 197, 24, 0.04)"
+          hoverFillColor="rgba(245, 197, 24, 0.09)"
+          activeSquareColor="rgba(245, 197, 24, 0.22)"
+        />
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Navbar
         theme={theme}
         setTheme={setTheme}
         onOpenRules={() => setIsRulesOpen(true)}
@@ -64,10 +78,11 @@ export default function App() {
         onResetCustom={handleResetCustom}
       />
 
-      {/* Main Split View: Left Questionnaire, Right Output Dashboard */}
+      {/* Main Split View: Left Questionnaire + Tactical Widgets, Right Output Dashboard */}
       <div className="dashboard-grid">
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <DynamicQuestionnaire answers={answers} setAnswers={setAnswers} />
+          <BatcaveTacticalWidgets evaluation={evaluation} answers={answers} />
         </div>
 
         <div>
@@ -87,6 +102,7 @@ export default function App() {
         isOpen={isRulesOpen}
         onClose={() => setIsRulesOpen(false)}
       />
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MessageSquare, Copy, Check } from 'lucide-react';
+import MagnetButton from './bits/MagnetButton.jsx';
 
 export default function BranchScriptGenerator({ evaluation }) {
   const [copied, setCopied] = useState(false);
@@ -59,19 +60,20 @@ export default function BranchScriptGenerator({ evaluation }) {
     <div style={{ background: 'var(--bg-surface-elevated)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', marginTop: '1.25rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <MessageSquare size={18} color="var(--accent-purple)" />
-          <h4 style={{ fontSize: '0.95rem', fontWeight: '700', margin: 0 }}>
+          <MessageSquare size={18} color="var(--gold)" />
+          <h4 style={{ fontSize: '0.95rem', fontWeight: '700', margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             💬 Branch Dialogue Script Generator
           </h4>
         </div>
-        <button
+        <MagnetButton
           className="btn btn-outline"
           onClick={handleCopy}
           style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+          strength={0.3}
         >
-          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? <Check size={14} color="var(--jade)" /> : <Copy size={14} color="var(--gold)" />}
           <span>{copied ? 'Copied' : 'Copy Script'}</span>
-        </button>
+        </MagnetButton>
       </div>
 
       <div style={{

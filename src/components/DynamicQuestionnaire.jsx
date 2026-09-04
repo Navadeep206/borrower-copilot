@@ -1,6 +1,8 @@
 import React from 'react';
 import { QUESTION_SCHEMA } from '../engine/questions.js';
 import { ChevronRight, AlertCircle } from 'lucide-react';
+import SpotlightCard from './bits/SpotlightCard.jsx';
+import ShinyText from './bits/ShinyText.jsx';
 
 export default function DynamicQuestionnaire({ answers, setAnswers }) {
   const handleChange = (fieldId, value) => {
@@ -95,20 +97,25 @@ export default function DynamicQuestionnaire({ answers, setAnswers }) {
   const completionPct = Math.round((tier1Answered / tier1Total) * 100);
 
   return (
-    <div style={{
-      background: 'var(--dark-2)',
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-lg)',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
+    <SpotlightCard
+      spotlightColor="rgba(245, 197, 24, 0.08)"
+      borderColor="rgba(245, 197, 24, 0.25)"
+      style={{
+        background: 'var(--dark-2)',
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-lg)',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
       {/* Gold left edge */}
       <div style={{
         position: 'absolute', top: 0, left: 0, bottom: 0, width: '2px',
-        background: 'linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 40%, transparent 100%)'
+        background: 'linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 40%, transparent 100%)',
+        zIndex: 4
       }} />
 
       {/* Header */}
@@ -117,7 +124,9 @@ export default function DynamicQuestionnaire({ answers, setAnswers }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ChevronRight size={18} color="var(--gold)" />
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-primary)' }}>
-              Borrower Profile
+              <ShinyText color="var(--text-primary)" shineColor="var(--gold)" speed={3}>
+                Borrower Profile Intake
+              </ShinyText>
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -192,6 +201,6 @@ export default function DynamicQuestionnaire({ answers, setAnswers }) {
           </div>
         )}
       </div>
-    </div>
+    </SpotlightCard>
   );
 }
