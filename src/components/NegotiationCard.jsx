@@ -53,7 +53,7 @@ export default function NegotiationCard({ evaluation }) {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         background: 'var(--bg-surface-elevated)',
         padding: '0.85rem 1.25rem',
         borderRadius: 'var(--radius-sm)',
@@ -84,16 +84,16 @@ export default function NegotiationCard({ evaluation }) {
 
       {/* O1 Verdict Header */}
       <div style={{
-        background: verdict === 'borrow' ? 'var(--accent-green-bg)' : verdict === 'borrow_less' ? 'var(--accent-amber-bg)' : 'var(--accent-rose-bg)',
-        borderLeft: `5px solid ${verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'}`,
+        background: verdict === 'borrow' ? 'var(--accent-green-bg)' : verdict === 'refinance' ? 'var(--accent-amber-bg)' : verdict === 'borrow_less' ? 'var(--accent-amber-bg)' : 'var(--accent-rose-bg)',
+        borderLeft: `5px solid ${verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'refinance' ? 'var(--accent-amber)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'}`,
         padding: '1.1rem',
         borderRadius: 'var(--radius-sm)',
         marginBottom: '1.5rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
           <ShieldCheck size={20} color={verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'} />
-          <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, textTransform: 'uppercase', color: verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)' }}>
-            VERDICT: {verdict === 'borrow' ? 'PROCEED TO BORROW' : verdict === 'borrow_less' ? 'BORROW LESS / CAP LIMIT' : 'REFINANCE FIRST / DO NOT BORROW AT HIGH RATES'}
+          <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, textTransform: 'uppercase', color: verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'refinance' ? 'var(--accent-amber)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)' }}>
+            VERDICT: {verdict === 'borrow' ? 'PROCEED TO BORROW' : verdict === 'refinance' ? 'REFINANCE HIGH-COST DEBT FIRST' : verdict === 'borrow_less' ? 'BORROW LESS / CAP LIMIT' : 'DO NOT BORROW'}
           </h3>
         </div>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', margin: 0, fontWeight: '500' }}>

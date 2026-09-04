@@ -11,8 +11,8 @@ export default function CounterOfferSimulator({ evaluation }) {
   const isQuoted = quotedRateNum > 0;
 
   const rateDelta = isQuoted ? quotedRateNum - fairRateBand.midpoint : 0;
-  const isOverpaying = rateDelta > 0.5;
-  const isGoodDeal = isQuoted && quotedRateNum <= fairRateBand.max;
+  // FIX: Overpaying means quote exceeds the MAX of the fair band, not just midpoint
+  const isOverpaying = isQuoted && quotedRateNum > fairRateBand.max;
 
   // Total interest calculation difference over loan tenure
   const fairTotalInterest = (evaluation.requestedEMI * tenureMonths) - requestedAmount;
@@ -20,9 +20,11 @@ export default function CounterOfferSimulator({ evaluation }) {
   // Calculate quoted EMI
   const r = quotedRateNum / 12 / 100;
   const n = tenureMonths || 36;
-  const P = requestedAmount || 100000;
-  const quotedEMI = isQuoted ? Math.round((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)) : 0;
-  const quotedTotalInterest = isQuoted ? (quotedEMI * n) - P : 0;
+  // FIX: Removed hardcoded P=100000. Use 0 when no requestedAmount — guard below.
+  const P = requestedAmount || 0;
+  // Only compute quoted EMI when P > 0 to avoid NaN
+  const quotedEMI = isQuoted && P > 0 ? Math.round((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)) : 0;
+  const quotedTotalInterest = isQuoted && P > 0 ? (quotedEMI * n) - P : 0;
 
   const totalOverpayment = Math.max(0, quotedTotalInterest - fairTotalInterest);
 

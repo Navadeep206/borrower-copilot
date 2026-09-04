@@ -4,29 +4,45 @@ import { MessageSquare, Copy, Check } from 'lucide-react';
 export default function BranchScriptGenerator({ evaluation }) {
   const [copied, setCopied] = useState(false);
 
-  const { targetProduct, fairRateBand, talkingPoints, rawAnswers } = evaluation;
+  // FIX: Use normalized creditScoreInput from evaluation, not rawAnswers.creditScore
+  // rawAnswers.creditScore could be string "780" or number 780 depending on select handling
+  const { targetProduct, fairRateBand, talkingPoints, rawAnswers, creditScoreInput } = evaluation;
+
+  const purposeLabels = {
+    personal: 'personal use',
+    wedding: 'a wedding',
+    business: 'business working capital',
+    vehicle: 'a delivery scooter / vehicle',
+    scooter: 'an electric delivery scooter',
+    debt_consolidation: 'debt refinancing / consolidation'
+  };
 
   const generateScript = () => {
-    let scriptLines = [];
+    const scriptLines = [];
+    const purposeText = purposeLabels[rawAnswers.loanPurpose] || rawAnswers.loanPurpose || 'my financial requirement';
 
-    scriptLines.push(`"Hello Manager, I am looking for a ₹${(evaluation.requestedAmount || 0).toLocaleString('en-IN')} loan for ${evaluation.rawAnswers.loanPurpose || 'my financial requirement'}.`);
+    scriptLines.push(`"Hello Manager, I am looking for a ₹${(evaluation.requestedAmount || 0).toLocaleString('en-IN')} loan for ${purposeText}.`);
 
-    if (rawAnswers.creditScore && rawAnswers.creditScore >= 750) {
-      scriptLines.push(`I have a verified CIBIL score of ${rawAnswers.creditScore}. According to RBI lending benchmarks, prime profiles qualify for ${fairRateBand.min}% - ${fairRateBand.max}%.`);
-    } else if (rawAnswers.creditScore === 'unknown') {
+    // FIX: Use creditScoreInput (number or 'unknown') from evaluation — pre-normalized
+    if (typeof creditScoreInput === 'number' && creditScoreInput >= 750) {
+      scriptLines.push(`I have a verified CIBIL score of ${creditScoreInput}. According to RBI lending benchmarks, prime profiles qualify for ${fairRateBand.min}% - ${fairRateBand.max}%.`);
+    } else if (typeof creditScoreInput === 'number' && creditScoreInput >= 700) {
+      scriptLines.push(`My CIBIL score of ${creditScoreInput} qualifies me for near-prime pricing. I expect rates in the ${fairRateBand.min}% - ${fairRateBand.max}% range.`);
+    } else if (creditScoreInput === 'unknown') {
       scriptLines.push(`I am New-to-Credit (NTC), but I have stable income. Please evaluate me under your NTC program pricing without subprime rate penalties.`);
     }
 
-    if (targetProduct === 'lap' && rawAnswers.collateralValue > 0) {
-      const ltvPct = (((evaluation.requestedAmount || 0) / rawAnswers.collateralValue) * 100).toFixed(0);
-      scriptLines.push(`I am offering unencumbered property worth ₹${(rawAnswers.collateralValue / 100000).toFixed(1)}L as collateral. At ${ltvPct}% LTV, this loan is fully secured, so I expect standard LAP pricing (${fairRateBand.min}%).`);
+    if (targetProduct === 'lap' && Number(rawAnswers.collateralValue) > 0) {
+      const colVal = Number(rawAnswers.collateralValue);
+      const ltvPct = (((evaluation.requestedAmount || 0) / colVal) * 100).toFixed(0);
+      scriptLines.push(`I am offering unencumbered property worth ₹${(colVal / 100000).toFixed(1)}L as collateral. At ${ltvPct}% LTV, this loan is fully secured — I expect standard LAP pricing (${fairRateBand.min}%).`);
     }
 
     if (evaluation.isProductiveAsset && evaluation.productiveAssetROI.expectedIncomeGain > 0) {
-      scriptLines.push(`This loan directly generates ₹${evaluation.productiveAssetROI.expectedIncomeGain.toLocaleString('en-IN')}/mo in new income, ensuring 100% EMI coverage surplus.`);
+      scriptLines.push(`This loan directly generates ₹${evaluation.productiveAssetROI.expectedIncomeGain.toLocaleString('en-IN')}/mo in new income, ensuring 100% EMI coverage with positive surplus.`);
     }
 
-    scriptLines.push(`My target monthly EMI ceiling is ₹${evaluation.safeEMICeiling.toLocaleString('en-IN')}. Please confirm your all-in APR including processing fee."`);
+    scriptLines.push(`My safe monthly EMI ceiling is ₹${evaluation.safeEMICeiling.toLocaleString('en-IN')}. Please confirm your all-in APR including processing fee."`); 
 
     return scriptLines.join('\n\n');
   };

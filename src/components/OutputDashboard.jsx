@@ -27,14 +27,14 @@ export default function OutputDashboard({ evaluation }) {
       
       {/* O1 Verdict Banner */}
       <div className="glass-card" style={{
-        background: verdict === 'borrow' ? 'var(--accent-green-bg)' : verdict === 'borrow_less' ? 'var(--accent-amber-bg)' : 'var(--accent-rose-bg)',
-        borderLeft: `6px solid ${verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'}`
+        background: verdict === 'borrow' ? 'var(--accent-green-bg)' : verdict === 'refinance' ? 'var(--accent-amber-bg)' : verdict === 'borrow_less' ? 'var(--accent-amber-bg)' : 'var(--accent-rose-bg)',
+        borderLeft: `6px solid ${verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'refinance' ? 'var(--accent-amber)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'}`
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <ShieldCheck size={26} color={verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'} />
-            <h2 className="title-medium" style={{ margin: 0, color: verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)' }}>
-              O1: {verdict === 'borrow' ? 'RECOMMENDED TO BORROW' : verdict === 'borrow_less' ? 'BORROW LESS / REDUCE LIMIT' : 'DO NOT BORROW / REFINANCE FIRST'}
+            <ShieldCheck size={26} color={verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'refinance' ? 'var(--accent-amber)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)'} />
+            <h2 className="title-medium" style={{ margin: 0, color: verdict === 'borrow' ? 'var(--accent-green)' : verdict === 'refinance' ? 'var(--accent-amber)' : verdict === 'borrow_less' ? 'var(--accent-amber)' : 'var(--accent-rose)' }}>
+              O1: {verdict === 'borrow' ? 'RECOMMENDED TO BORROW' : verdict === 'refinance' ? 'REFINANCE HIGH-COST DEBT FIRST' : verdict === 'borrow_less' ? 'BORROW LESS / REDUCE LIMIT' : 'DO NOT BORROW'}
             </h2>
           </div>
           <span className={`badge ${confidenceLevel === 'High' ? 'badge-green' : confidenceLevel === 'Medium' ? 'badge-cyan' : 'badge-amber'}`}>

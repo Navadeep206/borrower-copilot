@@ -5,11 +5,13 @@ export default function StressTestSlider({ evaluation }) {
   const [incomeDropPct, setIncomeDropPct] = useState(20);
   const [rateHikeBps, setRateHikeBps] = useState(200);
 
-  const { netIncome, livingExpenses, existingEMIs, requestedEMI, midpointRate } = evaluation;
+  const { netIncome, livingExpenses, existingEMIs, requestedEMI, midpointRate, safetyBufferPct: _unused } = evaluation;
+  // midpointRate is now correctly exported from the calculator engine
+  const safetyBufferPct = evaluation.foirCap ? (evaluation.foirCap < 0.38 ? 0.25 : evaluation.foirCap < 0.43 ? 0.20 : 0.15) : 0.15;
 
   // Recalculate stress scenario based on slider state
   const stressedIncome = netIncome * (1 - (incomeDropPct / 100));
-  const stressedSafetyBuffer = stressedIncome * 0.10;
+  const stressedSafetyBuffer = stressedIncome * safetyBufferPct;
   const stressedSafeAvailable = Math.max(0, stressedIncome - livingExpenses - stressedSafetyBuffer - existingEMIs);
 
   const stressedRate = midpointRate + (rateHikeBps / 100);
