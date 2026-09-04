@@ -56,7 +56,7 @@ export default function BatcaveTacticalWidgets({ evaluation, answers }) {
   const readyPct = Math.round((completedCount / totalCount) * 100);
 
   // Dynamic threat analysis
-  const hasAppLoans = Number(answers.highCostAppLoanAmount || answers.outstandingAppLoans || 0) > 0;
+  const hasAppLoans = Number(answers.existingHighCostLoansAmount || answers.highCostAppLoanAmount || answers.outstandingAppLoans || 0) > 0;
   const hasBounces = answers.recentBounces === 'yes' || answers.recentChequeBounce === 'yes';
   const isHighFOIR = evaluation && evaluation.netIncome > 0
     ? ((evaluation.existingEMIs + evaluation.requestedEMI) / evaluation.netIncome) > 0.50
