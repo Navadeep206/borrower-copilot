@@ -112,7 +112,6 @@ Custom-built React Bits components styled for the Dark Knight aesthetic:
 src/
 ├── components/
 │   ├── bits/                       # React Bits UI Library
-│   │   ├── Aurora.jsx              # Ambient gradient mesh
 │   │   ├── BlurReveal.jsx          # Staggered blur-in animations
 │   │   ├── CountUp.jsx             # Easing number counter
 │   │   ├── DecryptedText.jsx       # Batcomputer cryptographic cipher
