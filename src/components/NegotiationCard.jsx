@@ -1,6 +1,8 @@
 import React from 'react';
 import CounterOfferSimulator from './CounterOfferSimulator.jsx';
 import BranchScriptGenerator from './BranchScriptGenerator.jsx';
+import MagnetButton from './bits/MagnetButton.jsx';
+import BlurReveal from './bits/BlurReveal.jsx';
 import { Printer, ShieldCheck, ArrowRight, AlertTriangle, Coins } from 'lucide-react';
 
 export default function NegotiationCard({ evaluation }) {
@@ -27,6 +29,7 @@ export default function NegotiationCard({ evaluation }) {
   };
 
   return (
+    <BlurReveal delay={200} duration={700}>
     <div className="glass-card print-card" style={{ marginTop: '1.5rem', background: 'var(--bg-surface)' }}>
       {/* Header Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -39,14 +42,15 @@ export default function NegotiationCard({ evaluation }) {
           </h2>
         </div>
 
-        <button 
-          className="btn btn-primary no-print" 
+        <MagnetButton
+          className="btn btn-primary no-print"
           onClick={handlePrint}
           style={{ fontSize: '0.85rem' }}
+          strength={0.4}
         >
           <Printer size={16} />
           <span>Print / Save PDF Card</span>
-        </button>
+        </MagnetButton>
       </div>
 
       {/* Profile Overview Pill */}
@@ -185,5 +189,6 @@ export default function NegotiationCard({ evaluation }) {
       </div>
 
     </div>
+    </BlurReveal>
   );
 }
