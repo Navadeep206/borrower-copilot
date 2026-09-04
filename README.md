@@ -1,5 +1,7 @@
 # 🦇 Borrower Copilot · Indian Credit Intelligence & Lender Negotiation System
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-F5C518?style=for-the-badge&logo=github)](https://navadeep206.github.io/borrower-copilot/)
+
 > **Lokta Build Challenge Deliverable**  
 > An agentic, client-side credit intelligence assistant designed to empower Indian borrowers before walking into a bank branch. Answers four core questions:  
 > **1. Should I borrow at all?** (O1 Verdict)  
@@ -7,6 +9,8 @@
 > **3. What is a fair rate for me?** (O3 Fair Rate Band & All-in APR)  
 > **4. What EMI should I agree to?** (O4 Safe EMI Ceiling & Stress Test)  
 > Then equips the borrower with a print-ready **Lender Negotiation Dossier**, counter-offer evaluator, and branch dialogue script.
+>
+> 🔗 **Live URL:** [https://navadeep206.github.io/borrower-copilot/](https://navadeep206.github.io/borrower-copilot/)
 
 ---
 
